@@ -70,4 +70,30 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <property name="src.dir" value="src" />
+    <property name="build.dir" value="build" />
+    <property name="classes.dir" value="${build.dir}/classes" />
+    <property name="lib.dir" value="lib" /> <!-- Points to your newly created lib folder -->
+
+    <!-- Define the classpath to include JARs from lib -->
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <!-- Compile task -->
+    <target name="compile">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+    </target>
+
+    <!-- Run task -->
+    <target name="run" depends="compile">
+        <java classname="traveldart.Main" classpathref="classpath" fork="true">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+            </classpath>
+        </java>
+    </target>
 </project>

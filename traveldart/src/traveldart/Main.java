@@ -14,8 +14,17 @@ public class Main extends javax.swing.JFrame {
     /**
      * Creates new form Main
      */
+
     public Main() {
         initComponents();
+        Service service = new Service();
+        try{
+            System.out.println(service.getYelpRestaurantsTest());
+        }catch(Exception e){
+            System.out.println("Error");
+            e.printStackTrace();
+        }
+
     }
 
     /**
