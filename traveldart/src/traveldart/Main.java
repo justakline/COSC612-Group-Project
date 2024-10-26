@@ -1,4 +1,6 @@
 package traveldart;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -10,7 +12,7 @@ package traveldart;
  * @author diego
  */
 public class Main extends javax.swing.JFrame {
-
+    
     /**
      * Creates new form Main
      */
@@ -124,6 +126,8 @@ public class Main extends javax.swing.JFrame {
                 new Main().setVisible(true);
             }
         });
+        
+        Connection connection = DatabaseConnection.connect();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
