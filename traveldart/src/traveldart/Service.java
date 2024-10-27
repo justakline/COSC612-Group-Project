@@ -16,7 +16,7 @@ import com.google.gson.JsonParser;
 
 public class Service {
 
-    private static final String TICKETMASTER_API_KEY = "eh1qF1TAFWGoG51jDcIDUGVx35rJZ4tV";
+    private static final String TICKETMASTER_API_KEY = "our api key";
     private static final String TICKEMASTER_API_URL = "https://app.ticketmaster.com/discovery/v2";
     private OkHttpClient client;
     private final int requestAmount = 10;
