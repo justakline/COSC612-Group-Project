@@ -18,12 +18,12 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         initComponents();
         Service service = new Service();
-        try{
-            System.out.println(service.getYelpRestaurantsTest());
-        }catch(Exception e){
-            System.out.println("Error");
-            e.printStackTrace();
-        }
+        // try{
+        //
+        // }catch(Exception e){
+        //     System.out.println("Error");
+        //     e.printStackTrace();
+        // }
 
     }
 

@@ -1,21 +1,23 @@
 package traveldart;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.json.JSONObject;
 //
 import java.io.IOException;
+import java.util.ArrayList;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 // NOTHING IS WORKING BUT HERE IS AN OUTLINE
 
 public class Service {
 
-    private static final String YELP_API_KEY = "our key";
-    private static final String EVENTBRITE_API_KEY = "our key";
-
-    private static final String YELP_API_URL = "https://api.yelp.com/v3";
-    private static final String EVENTBRITE_API_URL = "https://www.eventbriteapi.com/v3/";
+    private static final String TICKETMASTER_API_KEY = "our api key";
+    private static final String TICKEMASTER_API_URL = "https://app.ticketmaster.com/discovery/v2";
 
     private OkHttpClient client;
 
@@ -23,38 +25,48 @@ public class Service {
         this.client = new OkHttpClient();
     }
 
-    // Fetch restaurants based on location and categories from Yelp API
-    public String getYelpRestaurantsTest() throws IOException {
-        Request request = new Request.Builder()
-                .url("https://api.yelp.com/v3/businesses/search?sort_by=best_match&limit=20")
-                .get()
-                .addHeader("accept", "application/json")
-                .build();
-        Response response = client.newCall(request).execute();
-        return parseResponse(response);
-    }
 
-    public String getYelpRestaurants(String location, String category) throws IOException {
+    public JsonArray getTicketMasterEvents(String city, String classification) throws IOException {
+        String addedParams = "&city=[" +city +"]"+  "&classificationName=[" + classification+"]";
         Request request = new Request.Builder()
-                .url(YELP_API_URL + "params for the api request")
-                .addHeader("Authorization", "Bearer " + YELP_API_KEY)
+                .url(TICKEMASTER_API_URL + "/events.json?size=10" + addedParams+ "&apikey=" +TICKETMASTER_API_KEY )
                 .build();
 
         Response response = client.newCall(request).execute();
-        return parseResponse(response);
-    }
+        return processTicketMasterResponse(response);
 
-    // Fetch events from Eventbrite based on category and location
-    public String getEventbriteEvents(String location, String category) throws IOException {
+    }
+    public JsonArray getTicketMasterEvents(String city) throws IOException {
+        String addedParams = "&city=[" +city + "]";
         Request request = new Request.Builder()
-                .url(EVENTBRITE_API_URL + "params for the api request")
-                .addHeader("Authorization", "Bearer " + EVENTBRITE_API_KEY)
+                .url(TICKEMASTER_API_URL + "/events.json?size=10" +addedParams + "&apikey=" +TICKETMASTER_API_KEY )
                 .build();
 
         Response response = client.newCall(request).execute();
-
-        return parseResponse(response);
+        return processTicketMasterResponse(response);
     }
+
+    private JsonArray processTicketMasterResponse(Response response) throws IOException {
+        String responseBody = parseResponse(response);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        JsonArray array = jsonObject.getAsJsonObject("_embedded").getAsJsonArray("events");
+
+        JsonArray events = new JsonArray();
+        for (JsonElement event: array){
+            JsonObject o = event.getAsJsonObject();
+
+            JsonObject eventProcessed = new JsonObject();
+            eventProcessed.add("name", o.get("name"));
+            eventProcessed.add("dates", o.get("dates"));
+            eventProcessed.add("classifications", o.get("classifications"));
+            eventProcessed.add("info", o.get("info"));
+            // System.out.println(f(o.toString()));
+            events.add(eventProcessed);
+        }
+
+        return events;
+    }
+
 
     // Parse the API response into JSON format
     private String parseResponse(Response response) throws IOException {
@@ -67,4 +79,28 @@ public class Service {
             throw new IOException("Unexpected code " + response);
         }
     }
+    public static String formatJson(String json) {
+
+        String indentString = "";
+        String finalString = "";
+        int tabs = 0;
+
+        for (char charFromJson : json.toCharArray()) {
+            finalString += charFromJson;
+            if("{".indexOf(charFromJson) != -1) {
+                finalString += "\n";
+                tabs +=1;
+                finalString += "\t".repeat(tabs);
+            }else if("}".indexOf(charFromJson) != -1) {
+                finalString += "\n";
+                tabs -=1;
+                finalString += "\t".repeat(tabs);
+            }
+
+
+        }
+
+        return finalString;
+    }
+
 }
