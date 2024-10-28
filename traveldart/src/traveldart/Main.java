@@ -1,9 +1,6 @@
 package traveldart;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import java.util.regex.Pattern;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -15,23 +12,12 @@ import java.util.regex.Pattern;
  * @author diego
  */
 public class Main extends javax.swing.JFrame {
-
+    
     /**
      * Creates new form Main
      */
-
     public Main() {
         initComponents();
-        Service service = new Service();
-
-        try{
-            // service.getTicketMasterEvents("Baltimore", Service.Categories.MUSIC);
-        }catch(Exception e){
-            System.out.println("Error");
-            e.printStackTrace();
-        }
-
-
     }
 
     /**
@@ -135,54 +121,14 @@ public class Main extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        Service s = new Service();
-        try{
-            JsonArray one = s.getTicketMasterEvents("Baltimore", Service.Categories.SPORTS);
-            JsonArray two = s.getTicketMasterEvents("New York", Service.Categories.HOLIDAY_EVENTS);
-            //
-            for (JsonElement e : one){
-                System.out.println(e);
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Main().setVisible(true);
             }
-            System.out.println("Start");
-            for (JsonElement e : two){
-                System.out.println(e);
-            }
-
-
-        }catch (Exception e){
-            System.out.println(e.toString());
-            e.printStackTrace();
-        }
-        // java.awt.EventQueue.invokeLater(new Runnable() {
-        //     public void run() {
-        //         new Main().setVisible(true);
-        //     }
-        // });
+        });
+        
+        Connection connection = DatabaseConnection.connect();
     }
-    public static String f(String json) {
-
-         String indentString = "";
-         String finalString = "";
-         int tabs = 0;
-
-        for (char charFromJson : json.toCharArray()) {
-            finalString += charFromJson;
-            if("{".indexOf(charFromJson) != -1) {
-                finalString += "\n";
-                tabs +=1;
-                finalString += "\t".repeat(tabs);
-            }else if("}".indexOf(charFromJson) != -1) {
-                finalString += "\n";
-                tabs -=1;
-            finalString += "\t".repeat(tabs);
-            }
-
-
-        }
-
-        return finalString;
-    }
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
