@@ -18,6 +18,8 @@ public class Service {
 
     private static final String TICKETMASTER_API_KEY = "our api key";
     private static final String TICKEMASTER_API_URL = "https://app.ticketmaster.com/discovery/v2";
+    private static final String OPENAI_API_KEY = "";
+    private static final String OPEN_AI_URL = "https://api.openai.com/v1/chat/completions";
     private OkHttpClient client;
     private final int requestAmount = 10;
 

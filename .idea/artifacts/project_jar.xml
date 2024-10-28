@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="project:jar">
+    <output-path>$PROJECT_DIR$/builds</output-path>
+    <root id="archive" name="project.jar">
+      <element id="module-output" name="COSC 612- Software Engineering Stuff" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/traveldart/lib/gson-2.9.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/traveldart/lib/okio-1.17.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/traveldart/lib/json-20140107.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/traveldart/lib/okhttp-3.14.9.jar" path-in-jar="/" />
+      <element id="file-copy" path="$PROJECT_DIR$/traveldart/lib/gson-2.9.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/traveldart/lib/okio-1.17.5.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/traveldart/lib/json-20140107.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/traveldart/lib/okhttp-3.14.9.jar" />
+    </root>
+  </artifact>
+</component>
