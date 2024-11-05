@@ -8,12 +8,13 @@ import java.sql.SQLOutput;
 public class ServiceTester {
 
     public static void main(String[] args) {
-        Service service = new Service();
+        Service service = Service.getInstance();
         JsonArray request1;
         JsonArray request2;
         JsonArray request3;
         JsonArray request4;
         JsonArray request5;
+        service.doSomething();
 
 
         try{
@@ -21,8 +22,8 @@ public class ServiceTester {
           //   request1 = service.getTicketMasterEvents("Baltimore", Service.Categories.FAMILY);
           //   request2 = service.getTicketMasterEvents("Philadelphia", Service.Categories.MUSIC);
           //   request3 = service.getTicketMasterEvents("Baltimore", "2024-10-03T00:00:10Z", "2024-11-22T00:00:00Z");
-            request4 = service.getTicketMasterEvents("Baltimore", "2024-10-03T00:00:10Z", "2024-11-22T00:00:00Z", Service.Categories.BASKETBALL);
-            request5 = service.createRecommendations(request4, new JsonArray());
+//            request4 = service.getTicketMasterEvents("Baltimore", "2024-10-03T00:00:10Z", "2024-11-22T00:00:00Z", Service.Categories.BASKETBALL);
+//            request5 = service.createRecommendationsOpenAi(request4, new JsonArray());
             // request5 = service.createRecommendations(request4, new JsonArray());
         }catch (Exception e){
             e.printStackTrace();
@@ -42,7 +43,7 @@ public class ServiceTester {
         // System.out.println(Service.formatJson(request3.toString()));
         // System.out.println("Request 4: ");
         // System.out.println(Service.formatJson(request4.toString()));
-        System.out.println("Request 5: ");
-        System.out.println(Service.formatJson(request5.toString()));
+//        System.out.println("Request 5: ");
+//        System.out.println(Service.formatJson(request5.toString()));
     }
 }

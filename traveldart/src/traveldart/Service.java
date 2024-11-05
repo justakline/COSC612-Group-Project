@@ -12,6 +12,7 @@ import com.google.gson.JsonParser;
 
 public class Service {
 
+    private static  Service service = null;
     private static final String TICKETMASTER_API_KEY = "";
     private static final String TICKEMASTER_API_URL = "https://app.ticketmaster.com/discovery/v2";
     private static final String OPENAI_API_KEY = "";
@@ -43,16 +44,25 @@ public class Service {
     }
 
 
-    public Service() {
+    private Service() {
+
         this.client = new OkHttpClient.Builder()
                 .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS) // Connection timeout
                 .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)    // Read timeout
                 .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)   // Write timeout
                 .build();
+
+    }
+
+    public static Service getInstance(){
+        if(service == null){
+            service = new Service();
+        }
+        return service;
     }
 
     // Pass in a json object with the list of events and preferences, it can only handle 3 events per payload
-    public JsonArray createRecommendations(JsonArray events, JsonArray prefernces) throws IOException {
+    public JsonArray createRecommendationsOpenAi(JsonArray events, JsonArray prefernces) throws IOException {
 
         JsonArray recommendations = new JsonArray();
         if(events.size() <= openAIInputOutputMax){
@@ -116,6 +126,8 @@ public class Service {
 
     // We will request
     public String formatOpenAiApiBody(JsonArray data, JsonArray preferences){
+        return "";
+
         String template = """
     From now on, respond only with the best recommendations from any input data that I give to you.
     
@@ -185,6 +197,8 @@ public class Service {
         jsonObject.addProperty("model", "gpt-4o-mini"); // Change to "gpt-3.5-turbo" if needed
         jsonObject.add("messages", messagesArray);
         return jsonObject.toString();
+
+
     }
 
     public JsonArray formatOpenAiOutput(String response) throws IOException {
@@ -334,6 +348,10 @@ public class Service {
         }
 
         return location;
+    }
+
+    public void doSomething(){
+        System.out.println("something");
     }
 
 }
