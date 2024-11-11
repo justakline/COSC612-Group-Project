@@ -5,178 +5,138 @@ import com.google.gson.JsonElement;
 import okhttp3.*;
 //
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+// NOTHING IS WORKING BUT HERE IS AN OUTLINE
+
 public class Service {
 
+    private static final String YELP_API_KEY ="";
+    private static final String YELP_API_URL = "https://api.yelp.com/v3/businesses/search?";
     private static final String TICKETMASTER_API_KEY = "";
     private static final String TICKEMASTER_API_URL = "https://app.ticketmaster.com/discovery/v2";
     private static final String OPENAI_API_KEY = "";
     private static final String OPEN_AI_URL = "https://api.openai.com/v1/chat/completions";
-    private final OkHttpClient client;
-    private final int requestAmount = 10;
-    private final int openAIInputOutputMax = 4; //requests can only handle this many events we give them at once
+    private OkHttpClient client;
+    private final int TICKET_MASTER_REQUEST_AMOUNT = 10;
+    private final int YELP_REQUEST_AMOUNT = 10;
 
 
-    // These are the most popular categories I could find that were compatible with the API
-    public enum Categories {
-        COMEDY("Comedy"), CONCERTS("Concerts"), ROCK("Rock"), POP("Pop"),
-        HIP_HOP_RAP("Hip-Hop/Rap"),  COUNTRY("Country"), CLASSICAL("Classical"),
-        THEATRE("Theatre"), HOLIDAY_EVENTS("Holiday Events"), FAIRS_FESTIVALS("Fairs & Festivals"),
-        FAMILY("Family"),  FOOTBALL("Football"), MOTORSPORTS_RACING("Motorsports/Racing"),
-        BASKETBALL("Basketball"), SOCCER("Soccer"), BASEBALL("Baseball"),
-        OPERA("Opera"), DANCE("Dance"),MUSIC("Music"), SPORTS("Sports") ;
-
-        private final String genreName;
-
-        Categories(String genreName) {
-            this.genreName = genreName;
-        }
-
-        @Override
-        public String toString() {
-            return genreName;
-        }
-    }
 
 
     public Service() {
-        this.client = new OkHttpClient.Builder()
-                .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS) // Connection timeout
-                .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)    // Read timeout
-                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)   // Write timeout
+        this.client = new OkHttpClient();
+    }
+
+
+
+    // userCategories should be things like "Thai, Mexican, Burgers... anything food related"
+    // userBudget should be 1-4, 1 being cheapest, 4 being most expensive
+    public JsonArray testYelp (String address, RestaurantCategories[] userCategories, int[] userBudget, double radiusMiles) throws IOException {
+        // The replaces are needed to put it in a format tha yelp understands
+        String location = address.replace(" ", "%20").replace(",", "%2C");
+        String uCategories = "";
+        for (RestaurantCategories item: userCategories){
+            uCategories += item + "&categories=";
+        }
+        String categories = uCategories.substring(0, uCategories.lastIndexOf("&"));
+
+        String budget = "";
+        for (int item: userBudget){
+            budget += item + "&price=";
+        }
+        budget = budget.substring(0, budget.lastIndexOf("&"));
+
+
+        int radiusMeters = radiusMiles > 25? 40000: (int)(radiusMiles * 1609);
+        String reqURL = YELP_API_URL +"""
+            location="""+ location + """
+            &radius=""" + radiusMeters + """
+            &categories=""" + categories + """
+            &price=""" + budget + """
+            &open_now=true
+            &sort_by=best_match
+            &limit=""" + YELP_REQUEST_AMOUNT;
+        Request request = new Request.Builder()
+                .url(reqURL)
+                .get()
+                .addHeader("accept", "application/json")
+                .addHeader("Authorization", "Bearer "+YELP_API_KEY)
                 .build();
+        // System.out.println(location);
+        // System.out.println(categories);
+        Response response = client.newCall(request).execute();
+        return processYelpResponse(response);
     }
 
-    // Pass in a json object with the list of events and preferences, it can only handle 3 events per payload
-    public JsonArray createRecommendations(JsonArray events, JsonArray prefernces) throws IOException {
 
-        JsonArray recommendations = new JsonArray();
-        if(events.size() <= openAIInputOutputMax){
-            return events;
-        }
+    public JsonArray processYelpResponse(Response response) throws IOException {
+        String responseBody = parseResponse(response);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmm");
 
-        // OpenAI can only handle 3 recs, so I am breaking it down into 3 at a time
-        for (int i =0; i < events.size(); i+= openAIInputOutputMax){
-            JsonArray payload = new JsonArray();
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        JsonArray newArray = new JsonArray();
+        JsonArray array = jsonObject.getAsJsonArray("businesses");
+        String[] jsonAttributes = {"name", "url", "image_url", "rating", "review_count"};
 
-            // Create the payload
-            for (int j = i; j < i + openAIInputOutputMax; j ++){
-                if(j < events.size()){
-                    payload.add(events.get(j));
+
+        for(JsonElement object : array){
+            try{
+                JsonObject responseItem = object.getAsJsonObject();
+                JsonObject newArrayItem = new JsonObject();
+
+                // The ones that are easy to get
+                for (String attribute: jsonAttributes){
+                    newArrayItem.addProperty(attribute, responseItem.get(attribute).getAsString());
                 }
+
+                // The more customized ones
+                JsonArray address =  responseItem.getAsJsonObject("location").getAsJsonArray("display_address");
+                String newAddress = "";
+                for (JsonElement e: address){
+                    newAddress += e.getAsString() +", ";
+                }
+                newAddress = newAddress.substring(0,newAddress.lastIndexOf(","));
+                newArrayItem.addProperty("address", newAddress);
+                newArrayItem.addProperty("price", responseItem.get("price").toString().split("\\$").length );
+
+                JsonArray categories = responseItem.getAsJsonArray("categories");
+                JsonArray newCategories = new JsonArray();
+                for (JsonElement category : categories){
+                    newCategories.add(category.getAsJsonObject().get("title"));
+                }
+                newArrayItem.add("categories", newCategories);
+
+                JsonArray hours = responseItem.getAsJsonArray("business_hours").get(0).getAsJsonObject().getAsJsonArray("open");
+                JsonArray newHours = new JsonArray();
+                for (JsonElement day : hours){
+                    newHours.add(String.valueOf(LocalTime.parse(day.getAsJsonObject().get("start").getAsString(), timeFormatter)) +":00");
+                    newHours.add(String.valueOf(LocalTime.parse(day.getAsJsonObject().get("end").getAsString(), timeFormatter))+":00");
+                    newHours.add(day.getAsJsonObject().get("day"));
+                }
+                newArrayItem.add("hours", newHours);
+                newArray.add(newArrayItem);
+            }catch(Exception e){
+                System.out.println("Something wrong with this item");
+
             }
 
-            System.out.println("the new payload was :\n" +payload);
-            //Launch the payload
-            // Convert JSON object to string
-            String requestBody = formatOpenAiApiBody(payload, prefernces);
-
-            // Create the request body
-            RequestBody body = RequestBody.create(
-                    MediaType.parse("application/json"),   requestBody
-            );
-
-            // Build the request
-            Request request = new Request.Builder()
-                    .url(OPEN_AI_URL) // Replace with the correct URL
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("Authorization", "Bearer " + OPENAI_API_KEY)
-                    .post(body)
-                    .build();
-
-            // If something happens lets just pretend like it didnt
-
-            try{
-                Response response = client.newCall(request).execute();
-                String parsedResponse = parseResponse(response);
-                recommendations.add( formatOpenAiOutput(parsedResponse));
-            } catch (Exception e){
-                System.out.println("\n\n There was an error, call had a response of :");
-                System.out.println("Error was " );
-                e.printStackTrace();
-
-            }
         }
 
-        JsonArray finalRecs = new JsonArray();
-        for(JsonElement rec: recommendations){
-            try{
-                finalRecs.add(rec.getAsJsonArray().get(0));
-            }catch (Exception e){
-                System.out.println("Not an array");
-            }
-        }
-
-        return finalRecs;
+        return newArray;
     }
 
-    // We will request
-    public String formatOpenAiApiBody(JsonArray data, JsonArray preferences){
-        String template = """
-    From now on, respond only with the best recommendations from any input data that I give to you.
-    
-    Preferences are: """ + preferences.toString() + """
-    
-    The events are:
-    """ + data.toString() + """
-    
-    Your response should be a single string formatted as a JSON array, containing individual JSON objects for each recommendation. Follow this format strictly:
-
-    [
-        {
-            "name": " ",
-            "dates": {
-                "start": {
-                    "localDate": " ",
-                    "localTime": " ",
-                    "dateTime": " ",
-                    "dateTBD": " ",
-                    "dateTBA": " ",
-                    "timeTBA": " ",
-                    "noSpecificTime": " "
-                },
-                "timezone": " ",
-                "status": {
-                    "code": " "
-                },
-                "spanMultipleDays": " "
-            },
-            "classifications": [
-                {
-                    "primary": " ",
-                    "segment": {"id": " ", "name": " "},
-                    "genre": {"id": " ", "name": " "},
-                    "subGenre": {"id": " ", "name": " "},
-                    "type": {"id": " ", "name": " "},
-                    "subType": {"id": " ", "name": " "},
-                    "family": " "
-                }
-            ],
-            "url": " ",
-            "location": {
-                "address": " ",
-                "city": " ",
-                "state": " ",
-                "postalCode": " ",
-                "country": " "
-            }
-        }
-    ]
-
-    - Recommend at most """ + openAIInputOutputMax + """ 
-    events. If fewer recommendations are available, include as many as possible. TRY YOUR HARDEST TO GET MORE THAN 1.
-    - Do not include any special characters like \\t, \\n, or extra whitespace. The response should be a single-line string in valid JSON format.
-    - Populate the fields in each JSON object directly from the recommendation data without adding any extra characters or explanations.
-    - The JSON array should only contain the structured recommendations with no additional text.
-
-    """;
+    public void testOpenAI() throws IOException {
+        String question = "Where is the White house located?";
         JsonObject messageObject = new JsonObject();
         messageObject.addProperty("role", "user");
-        messageObject.addProperty("content", template);
+        messageObject.addProperty("content", question);
 
         JsonArray messagesArray = new JsonArray();
         messagesArray.add(messageObject);
@@ -184,30 +144,35 @@ public class Service {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("model", "gpt-4o-mini"); // Change to "gpt-3.5-turbo" if needed
         jsonObject.add("messages", messagesArray);
-        return jsonObject.toString();
+
+        // Convert JSON object to string
+        String requestBody = jsonObject.toString();
+
+        // Create the request body
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/json"),   requestBody
+        );
+
+        // Build the request
+        Request request = new Request.Builder()
+                .url(OPEN_AI_URL) // Replace with the correct URL
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer " + OPENAI_API_KEY)
+                .post(body)
+                .build();
+
+        Response response = client.newCall(request).execute();
+        System.out.println(formatJson(response.body().string()));
     }
 
-    public JsonArray formatOpenAiOutput(String response) throws IOException {
-        JsonObject jsonArray = JsonParser.parseString(response).getAsJsonObject();
-        JsonArray choices = jsonArray.get("choices").getAsJsonArray();
-        JsonObject content = choices.get(0).getAsJsonObject().getAsJsonObject("message");
-        String n = content.toString();
-
-        // Formatting of the message from openai made me do this, please touch nothing
-        n = n.replace("\\t", "").replace("\\n", "").replace("\\", "");
-        n = n.substring(n.indexOf("["), n.lastIndexOf("\",")) ;
-        // System.out.println("n is");
-        // System.out.println(formatJson(n));
-        return JsonParser.parseString(n).getAsJsonArray();
-    }
 
     // dateTime needs to be in format YEAR-MONTH-DAYTHR:MIN:SECZ
     // dateTime example format->      2024-11-22T15:01:0Z
     // MUST BE HAVE THE SAME NUMBER OF DIGITS FOR EACH ONE, YEAR NEEDS 4 EVERYTHING ELSE NEEDS 2
-    public JsonArray getTicketMasterEvents(String city, String startDateTime, String endDateTime, Categories classification) throws IOException {
+    public JsonArray getTicketMasterEvents(String city, String startDateTime, String endDateTime, EventCategories classification) throws IOException {
         String addedParams = "&city=[" +city +"]"+  "&startDateTime=" + startDateTime + "&endDateTime=" + endDateTime +"&classification=" + classification.toString();
         Request request = new Request.Builder()
-                .url(TICKEMASTER_API_URL + "/events.json?size="+requestAmount + addedParams+ "&apikey=" +TICKETMASTER_API_KEY )
+                .url(TICKEMASTER_API_URL + "/events.json?size="+TICKET_MASTER_REQUEST_AMOUNT + addedParams+ "&apikey=" +TICKETMASTER_API_KEY )
                 .build();
 
         Response response = client.newCall(request).execute();
@@ -217,7 +182,7 @@ public class Service {
     public JsonArray getTicketMasterEvents(String city, String startDateTime, String endDateTime) throws IOException {
         String addedParams = "&city=[" +city +"]"+  "&startDateTime=" + startDateTime + "&endDateTime=" + endDateTime;
         Request request = new Request.Builder()
-                .url(TICKEMASTER_API_URL + "/events.json?size="+requestAmount + addedParams+ "&apikey=" +TICKETMASTER_API_KEY )
+                .url(TICKEMASTER_API_URL + "/events.json?size="+TICKET_MASTER_REQUEST_AMOUNT + addedParams+ "&apikey=" +TICKETMASTER_API_KEY )
                 .build();
 
         Response response = client.newCall(request).execute();
@@ -225,10 +190,10 @@ public class Service {
 
     }
 
-    public JsonArray getTicketMasterEvents(String city, Categories classification) throws IOException {
+    public JsonArray getTicketMasterEvents(String city, EventCategories classification) throws IOException {
         String addedParams = "&city=[" +city +"]"+  "&classificationName=[" + classification.toString()+"]";
         Request request = new Request.Builder()
-                .url(TICKEMASTER_API_URL + "/events.json?size="+requestAmount + addedParams+ "&apikey=" +TICKETMASTER_API_KEY )
+                .url(TICKEMASTER_API_URL + "/events.json?size="+TICKET_MASTER_REQUEST_AMOUNT + addedParams+ "&apikey=" +TICKETMASTER_API_KEY )
                 .build();
 
         Response response = client.newCall(request).execute();

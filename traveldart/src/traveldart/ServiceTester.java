@@ -1,9 +1,6 @@
 package traveldart;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
-import java.sql.SQLOutput;
 
 public class ServiceTester {
 
@@ -15,18 +12,18 @@ public class ServiceTester {
         JsonArray request4;
         JsonArray request5;
 
-
         try{
-          // service.test();
-          //   request1 = service.getTicketMasterEvents("Baltimore", Service.Categories.FAMILY);
-          //   request2 = service.getTicketMasterEvents("Philadelphia", Service.Categories.MUSIC);
-          //   request3 = service.getTicketMasterEvents("Baltimore", "2024-10-03T00:00:10Z", "2024-11-22T00:00:00Z");
-            request4 = service.getTicketMasterEvents("Baltimore", "2024-10-03T00:00:10Z", "2024-11-22T00:00:00Z", Service.Categories.BASKETBALL);
-            request5 = service.createRecommendations(request4, new JsonArray());
-            // request5 = service.createRecommendations(request4, new JsonArray());
+            // service.test();
+            //   request1 = service.getTicketMasterEvents("Baltimore", Service.Categories.FAMILY);
+            //   request2 = service.getTicketMasterEvents("Philadelphia", "Music");
+            //   request3 = service.getTicketMasterEvents("Baltimore", "2024-10-03T00:00:10Z", "2024-11-22T00:00:00Z");
+            //     request4 = service.getTicketMasterEvents("Baltimore", "2024-10-03T00:00:10Z", "2024-11-22T00:00:00Z", Service.Categories.BASKETBALL);
+            // service.testOpenAI();
+            request5 = service.testYelp("Towson, MD", new RestaurantCategories[]{RestaurantCategories.TRADAMERICAN, RestaurantCategories.JAPANESE},new int[]{2,3}, 2 );
+
         }catch (Exception e){
             e.printStackTrace();
-        //     System.err.println("Problem! you might not have the api key");
+            //     System.err.println("Problem! you might not have the api key");
             request1 = new JsonArray();
             request2 = new JsonArray();
             request3 = new JsonArray();
