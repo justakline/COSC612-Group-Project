@@ -30,8 +30,13 @@ public class Service {
 
     // These are the most popular categories I could find that were compatible with the API
 
-
-    public Service() {
+    public static Service getInstance(){
+        if (service == null){
+            service = new Service();
+        }
+        return service;
+    }
+    private Service() {
         this.client = new OkHttpClient();
     }
 

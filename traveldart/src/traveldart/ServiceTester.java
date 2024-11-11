@@ -5,7 +5,7 @@ import com.google.gson.JsonArray;
 public class ServiceTester {
 
     public static void main(String[] args) {
-        Service service = new Service();
+        Service service = Service.getInstance();
         JsonArray request1;
         JsonArray request2;
         JsonArray request3;
