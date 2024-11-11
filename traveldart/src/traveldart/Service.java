@@ -13,10 +13,11 @@ import java.util.Arrays;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-// NOTHING IS WORKING BUT HERE IS AN OUTLINE
+
 
 public class Service {
 
+    private static  Service service = null;
     private static final String YELP_API_KEY ="";
     private static final String YELP_API_URL = "https://api.yelp.com/v3/businesses/search?";
     private static final String TICKETMASTER_API_KEY = "";
@@ -27,7 +28,7 @@ public class Service {
     private final int TICKET_MASTER_REQUEST_AMOUNT = 10;
     private final int YELP_REQUEST_AMOUNT = 10;
 
-
+    // These are the most popular categories I could find that were compatible with the API
 
 
     public Service() {
