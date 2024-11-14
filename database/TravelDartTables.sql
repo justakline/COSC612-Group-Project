@@ -45,15 +45,16 @@ CREATE TABLE FOOD_PLACES(
 	p_address varchar(50),
 	p_rating float,
 	p_hours varchar(15),
-	yelp_id varchar(25) NOT NULL UNIQUE
+	yelp_id varchar(25) NOT NULL
 );
 CREATE TABLE MUSIC_EVENTS(
 	event_id int NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	e_name varchar(30) NOT NULL,
 	e_venue varchar(30),
-	e_rating float,
+    minPrice float,
+    maxPrice float,
 	e_date_time timestamp,
-	ebrite_id varchar(25) NOT NULL UNIQUE
+	discovery_id varchar(25) NOT NULL
 );
 CREATE TABLE RECOMMENDATIONS (
 	recommendation_id int NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
