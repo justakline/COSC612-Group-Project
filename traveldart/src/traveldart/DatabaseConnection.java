@@ -3,9 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package traveldart;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 /**
  *
  * @author diego
@@ -24,5 +22,74 @@ public class DatabaseConnection {
             System.err.println("Connection failed: " + e.getMessage());
         }
         return connection;
+    }
+    
+    public static void printAllRowsForTable(String tableName) {
+            try{
+                 String query = "SELECT * FROM "+tableName; // Replace 'your_table_name' with the table you want to query
+            
+            Connection connection = connect();
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            
+
+            // Get metadata to retrieve column information
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            // Print column names
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.print(metaData.getColumnName(i) + "\t");
+            }
+            System.out.println();
+
+            // Print rows
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.print(resultSet.getString(i) + "\t");
+                }
+                System.out.println();
+            }
+            }catch(SQLException e){
+                
+                System.out.println(e);
+            }
+           
+    }
+    
+     public static void printAllTableNames() {
+        Connection connection = null;
+        ResultSet resultSet = null;
+
+        try {
+            // Establish connection
+            connection = connect();
+            if (connection == null) {
+                System.out.println("Failed to establish a database connection.");
+                return;
+            }
+
+            // Get database metadata
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            // Retrieve table names
+            resultSet = metaData.getTables(null, null, "%", new String[]{"TABLE"});
+            System.out.println("Tables in the database:");
+
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("TABLE_NAME");
+                System.out.println(tableName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources
+            try {
+                if (resultSet != null) resultSet.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
