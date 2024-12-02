@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import javax.swing.border.Border;
+import java.security.MessageDigest;
 
 public class Login extends JFrame {
 
@@ -138,13 +139,51 @@ public class Login extends JFrame {
         Border label2 = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray);
         accountVariable.setBorder(label2);
     }
+    
+    // Verify if the input password matches the stored hash
+    public static boolean verifyPassword(String inputPassword, String storedHash) {
+        try {
+            // Split the stored hash into salt and hashedPassword
+            String[] parts = storedHash.split(":");
+            if (parts.length != 2) {
+                return false;  // Invalid format of stored hash
+            }
+
+            String saltHex = parts[0];
+            String storedHashedPasswordHex = parts[1];
+
+            // Convert the salt from hex back to bytes
+            byte[] salt = new byte[saltHex.length() / 2];
+            for (int i = 0; i < salt.length; i++) {
+                salt[i] = (byte) ((Character.digit(saltHex.charAt(2 * i), 16) << 4)
+                        + Character.digit(saltHex.charAt(2 * i + 1), 16));
+            }
+
+            // Hash the input password with the extracted salt
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(salt);
+            byte[] hashedInputPassword = md.digest(inputPassword.getBytes());
+
+            // Convert the hashed input password to hex
+            StringBuilder hashedInputPasswordHex = new StringBuilder();
+            for (byte b : hashedInputPassword) {
+                hashedInputPasswordHex.append(String.format("%02x", b));
+            }
+
+            // Compare the newly hashed password with the stored hashed password
+            return storedHashedPasswordHex.equals(hashedInputPasswordHex.toString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {
     Connection connection = null;
     PreparedStatement pst = null;
     ResultSet resultSet = null;
 
-    String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+//    String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+    String query = "SELECT * FROM users WHERE username = ?";
     try {
         // Establish connection
         connection = DatabaseConnection.connect();
@@ -152,16 +191,18 @@ public class Login extends JFrame {
         // Prepare the statement with placeholders
         pst = connection.prepareStatement(query);
         pst.setString(1, username.getText());
-        pst.setString(2, password.getText());
+//        pst.setString(2, password.getText());
 
         // Execute the query
         resultSet = pst.executeQuery();
 
         // Check if a user exists with the given credentials
         if (resultSet.next()) {
+            String storedHash = resultSet.getString("password");
+            this.verifyPassword(password.getText(), storedHash);
             // User found, login successful
             javax.swing.JOptionPane.showMessageDialog(null, "Login successful!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            
+            DataStore.getInstance().setUsername(username.getText());
             HomePage hp = new HomePage();
             hp.setVisible(true);
             this.setVisible(false);

@@ -1,5 +1,10 @@
 package traveldart;
 // The strings are directly useable with Yelp so we must use them
+
+import java.util.Arrays;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+
 public enum RestaurantCategories {
     // Top Food Categories and Types
     TRADAMERICAN("tradamerican"),
@@ -36,5 +41,12 @@ public enum RestaurantCategories {
     @Override
     public String toString() {
         return alias;
+    }
+    
+    public static ComboBoxModel<String> getAllValues() {
+        // Create and return a DefaultComboBoxModel with the genre names
+        return new DefaultComboBoxModel<>(Arrays.stream(RestaurantCategories.values())
+                                                .map(RestaurantCategories::toString)
+                                                .toArray(String[]::new));
     }
 }

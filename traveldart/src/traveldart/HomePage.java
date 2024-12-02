@@ -16,11 +16,13 @@ import javax.swing.JOptionPane;
  */
 public class HomePage extends javax.swing.JFrame {
 
+    String username = DataStore.getInstance().getUsername();
     /**
      * Creates new form HomePage
      */
     public HomePage() {
         initComponents();
+        System.out.println(DataStore.getInstance().getUsername());
     }
 
     /**
@@ -39,10 +41,14 @@ public class HomePage extends javax.swing.JFrame {
         signOff = new javax.swing.JLabel();
         profile = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        welcomeLabel = new javax.swing.JLabel();
+        usernameLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(102, 0, 0));
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
 
         jPanel2.setBackground(new java.awt.Color(0, 153, 153));
         jPanel2.setForeground(new java.awt.Color(0, 153, 153));
@@ -91,6 +97,17 @@ public class HomePage extends javax.swing.JFrame {
 
         profile.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         profile.setText("Profile");
+        profile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                profileMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                profileMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                profileMouseExited(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
         jLabel5.setText("Travel Dart");
@@ -102,7 +119,7 @@ public class HomePage extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 250, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 252, Short.MAX_VALUE)
                 .addComponent(home, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(40, 40, 40)
                 .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -128,17 +145,47 @@ public class HomePage extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        welcomeLabel.setBackground(new java.awt.Color(255, 255, 255));
+        welcomeLabel.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        welcomeLabel.setText(" WELCOME");
+
+        usernameLabel.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        usernameLabel.setText(this.username);
+
+        jTextArea1.setEditable(false);
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jTextArea1.setText("Travel Dart, is a location-based desktop application intended to serve as one’s travel\n companion, giving individualized recommendations on restaurants and music events based\n on preferences. It can be used by anyone traveling and seeking activities to do in their\n leisure time. The users may include tourists, business travelers, or anyone actively visiting \nan unfamiliar location.");
+        jScrollPane1.setViewportView(jTextArea1);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(248, 248, 248)
+                        .addComponent(welcomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(30, 30, 30)
+                        .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(153, 153, 153)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 661, Short.MAX_VALUE))
+                .addGap(76, 76, 76)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(welcomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 287, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -205,7 +252,7 @@ public class HomePage extends javax.swing.JFrame {
 
     private void searchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchMouseClicked
         // TODO add your handling code here:
-        Search refForm = new Search();
+        UserPreferences refForm = new UserPreferences();
         refForm.setVisible(true);
         refForm.pack();
         refForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -215,7 +262,7 @@ public class HomePage extends javax.swing.JFrame {
     private void homeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseExited
         // TODO add your handling code here:
         Border label2 = BorderFactory.createMatteBorder(0,0,1,0,Color.gray);
-        search.setBorder(label2);
+        home.setBorder(label2);
     }//GEN-LAST:event_homeMouseExited
 
     private void homeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseEntered
@@ -227,13 +274,34 @@ public class HomePage extends javax.swing.JFrame {
 
     private void homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseClicked
         // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "You're already on the home page", 
+                                   "ERROR", JOptionPane.ERROR_MESSAGE);
 
     }//GEN-LAST:event_homeMouseClicked
 
-    
- 
-    
-    
+    private void profileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileMouseClicked
+        // TODO add your handling code here:\
+        Profile_1 refForm = new Profile_1();
+        refForm.setVisible(true);
+        refForm.pack();
+        refForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.dispose();
+        
+        
+    }//GEN-LAST:event_profileMouseClicked
+
+    private void profileMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileMouseEntered
+        // TODO add your handling code here:
+          Border label = BorderFactory.createMatteBorder(0,0,1,0,Color.red);
+          profile.setBorder(label);
+    }//GEN-LAST:event_profileMouseEntered
+
+    private void profileMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileMouseExited
+        // TODO add your handling code here:
+        Border label2 = BorderFactory.createMatteBorder(0,0,1,0,Color.gray);
+        profile.setBorder(label2);
+    }//GEN-LAST:event_profileMouseExited
+   
     /**
      * @param args the command line arguments
      */
@@ -261,6 +329,7 @@ public class HomePage extends javax.swing.JFrame {
         }
         //</editor-fold>
 
+        String username = DataStore.getInstance().getUsername();
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -274,9 +343,13 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JLabel profile;
     private javax.swing.JLabel search;
     private javax.swing.JLabel signOff;
+    private javax.swing.JLabel usernameLabel;
+    private javax.swing.JLabel welcomeLabel;
     // End of variables declaration//GEN-END:variables
 }
 

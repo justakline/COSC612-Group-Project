@@ -3,10 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package traveldart;
-
+import traveldart.Login;
 import javax.swing.BorderFactory;
 import java.sql.Connection;
 import javax.swing.JFrame;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import javax.swing.border.Border;
@@ -16,8 +17,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.ResultSet;
-import java.sql.Date;
-
+import java.sql.*;
+import java.text.SimpleDateFormat;
 
 //import javax.xml.bind.DatatypeConverter;
 
@@ -49,11 +50,15 @@ public class SignUp extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         passwordField = new javax.swing.JPasswordField();
         usernameField = new javax.swing.JTextField();
-        dateOfBirth = new javax.swing.JTextField();
+        lastNameField = new javax.swing.JTextField();
+        emailField = new javax.swing.JTextField();
+        firstNameField = new javax.swing.JTextField();
         confirmPwd = new javax.swing.JPasswordField();
         jButton1 = new javax.swing.JButton();
         signinLink = new javax.swing.JLabel();
@@ -90,7 +95,16 @@ public class SignUp extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Date Of Birth:");
+        jLabel2.setText("Last Name:");
+
+        jLabel6.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("First Name:");
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Email:");
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
@@ -101,9 +115,9 @@ public class SignUp extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Confirm Password:");
 
-        dateOfBirth.addActionListener(new java.awt.event.ActionListener() {
+        lastNameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dateOfBirthActionPerformed(evt);
+                lastNameFieldActionPerformed(evt);
             }
         });
 
@@ -145,47 +159,64 @@ public class SignUp extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(73, 73, 73)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(confirmPwd, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(dateOfBirth, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(83, 83, 83)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lastNameField)
+                            .addComponent(firstNameField)
+                            .addComponent(confirmPwd, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
+                            .addComponent(passwordField)
+                            .addComponent(emailField)
+                            .addComponent(usernameField)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(288, 288, 288)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(245, 245, 245)
                         .addComponent(signinLink, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(174, Short.MAX_VALUE))
+                .addContainerGap(164, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(39, 39, 39)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(dateOfBirth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(36, 36, 36)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel2)
+                            .addComponent(lastNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(57, 57, 57))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel6)
+                        .addComponent(firstNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(40, 40, 40)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(39, 39, 39)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(confirmPwd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(41, 41, 41)
-                .addComponent(signinLink)
-                .addGap(30, 30, 30))
+                    .addComponent(jLabel3)
+                    .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(38, 38, 38)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(42, 42, 42)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(confirmPwd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addGap(41, 41, 41)
+                        .addComponent(signinLink)
+                        .addGap(30, 30, 30))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -203,18 +234,6 @@ public class SignUp extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void signinLinkMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signinLinkMouseExited
-        // TODO add your handling code here:
-        Border label = BorderFactory.createMatteBorder(0,0,1,0,Color.lightGray);
-        signinLink.setBorder(label);
-    }//GEN-LAST:event_signinLinkMouseExited
-
-    private void signinLinkMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signinLinkMouseEntered
-        // TODO add your handling code here:
-        Border label = BorderFactory.createMatteBorder(0,0,1,0,new Color(0,102,51));
-        signinLink.setBorder(label);
-    }//GEN-LAST:event_signinLinkMouseEntered
-
     private void signinLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signinLinkMouseClicked
         // TODO add your handling code here:
         Login reg = new Login();
@@ -224,22 +243,36 @@ public class SignUp extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_signinLinkMouseClicked
 
+    private void signinLinkMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signinLinkMouseEntered
+        // TODO add your handling code here:
+        Border label = BorderFactory.createMatteBorder(0,0,1,0,new Color(0,102,51));
+        signinLink.setBorder(label);
+    }//GEN-LAST:event_signinLinkMouseEntered
+
+    private void signinLinkMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signinLinkMouseExited
+        // TODO add your handling code here:
+        Border label = BorderFactory.createMatteBorder(0,0,1,0,Color.lightGray);
+        signinLink.setBorder(label);
+    }//GEN-LAST:event_signinLinkMouseExited
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        try {
+          try {
             // Load the MySQL JDBC driver
-
-            Connection connection = DatabaseConnection.connect();
+//            Class.forName("com.mysql.cj.jdbc.Driver");
+//            Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/traveldart", "root", "0000");
+            // Establish connection
+            Connection conn = null;
+            conn = DatabaseConnection.connect();
 
             // Get user input
             String username = usernameField.getText();
-            String birthDay = dateOfBirth.getText();
-    
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            String email = emailField.getText();
             String password = passwordField.getText();
             String confirmPassword = confirmPwd.getText();
-            int year, month, day;
-            
-            DatabaseConnection.printAllTableNames();DatabaseConnection.printAllRowsForTable("users");
+
             // Validate the password
             if (!isValidPassword(password)) {
                 JOptionPane.showMessageDialog(null, "Password must contain at least one special character and be at least 8 characters long.");
@@ -252,77 +285,49 @@ public class SignUp extends javax.swing.JFrame {
                 return;
             }
             
-            if(!isValidDateFormat(birthDay)){
-                 JOptionPane.showMessageDialog(null, "Birth date needs to be in the form YEAR-MONTH-DAY for ex 2000-01-01");
-                 return;
-            }
-            year = Integer.parseInt(birthDay.substring(0,4));
-            month = Integer.parseInt(birthDay.substring(5,7));
-             day = Integer.parseInt(birthDay.substring(8,10));;
-
-            String checkQuery = "SELECT COUNT(*) FROM users WHERE username = ?";
-            PreparedStatement checkStmt = connection.prepareStatement(checkQuery);
+            String checkQuery = "SELECT COUNT(*) FROM USERS WHERE username = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
             checkStmt.setString(1, username);
+//            checkStmt.setString(2, email);
             ResultSet rs = checkStmt.executeQuery();
-
-            if (rs.next() && rs.getInt(1) > 0) {
-                JOptionPane.showMessageDialog(null, "Username already exists. Please choose another.");
-                return; // Exit if a duplicate is found
-            }
-           
-
+        
+        if (rs.next() && rs.getInt(1) > 0) {
+            JOptionPane.showMessageDialog(null, "Username or email already exists. Please choose another.");
+            return; // Exit if a duplicate is found
+        }
+            String dateOfBirthStr = "1990-12-15"; // Example date
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date parsedDate = sdf.parse(dateOfBirthStr);
+            java.sql.Date sqlDate = new java.sql.Date(parsedDate.getTime());
             // Hash the password
             String hashedPassword = hashPassword(password);
+            System.out.println(hashedPassword);
             // Prepare the SQL statement
-            String query = "INSERT INTO users  (username, date_of_birth, password ) VALUES (?, ?, ?)";
-            PreparedStatement pStmt = connection.prepareStatement(query);
-
+            String query = "INSERT INTO USERS (username, date_of_birth, password) VALUES (?, ?, ?)";
+            PreparedStatement pStmt = conn.prepareStatement(query);
             pStmt.setString(1, username);
-            pStmt.setDate(2,new Date(year, month, day));
-            pStmt.setString(3, password);
+            pStmt.setDate(2, sqlDate); // Set the SQL Date parameter
+//            pStmt.setString(2, firstName);
+//            pStmt.setString(3, lastName);
+//            pStmt.setString(4, email);
+            pStmt.setString(3, hashedPassword);
+//            pStmt.setString(6, password);// Store the hashed password
 
             // Execute the update
             pStmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Registration Successful");
-            HomePage p = new HomePage();
-            p.setVisible(true);
-            this.setVisible(false);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
+    
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void dateOfBirthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dateOfBirthActionPerformed
+    private void lastNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastNameFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_dateOfBirthActionPerformed
+    }//GEN-LAST:event_lastNameFieldActionPerformed
 
-    public static boolean isValidDateFormat(String date) {
-    // Check if the string is exactly 10 characters long
-    if (date == null || date.length() != 10) {
-        return false;
-    }
-
-    // Check if the fifth and eighth characters are hyphens
-    if (date.charAt(4) != '-' || date.charAt(7) != '-') {
-        return false;
-    }
-
-    // Check if the other parts are digits
-    for (int i = 0; i < date.length(); i++) {
-        if (i == 4 || i == 7) {
-            // Skip the hyphens
-            continue;
-        }
-        if (!Character.isDigit(date.charAt(i))) {
-            return false;
-        }
-    }
-
-    // If all checks pass, return true
-    return true;
-    }
     
     public static boolean isValidPassword(String password) {
         // Check if the password contains at least one special character and is at least 8 characters long
@@ -396,15 +401,19 @@ public class SignUp extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPasswordField confirmPwd;
-    private javax.swing.JTextField dateOfBirth;
+    private javax.swing.JTextField emailField;
+    private javax.swing.JTextField firstNameField;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JTextField lastNameField;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel signinLink;
     private javax.swing.JTextField usernameField;

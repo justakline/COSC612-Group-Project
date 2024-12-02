@@ -47,6 +47,8 @@ public class Service {
     // userCategories should be things like "Thai, Mexican, Burgers... anything food related"
     // userBudget should be 1-4, 1 being cheapest, 4 being most expensive
     public JsonArray getYelpRestaurants (String address,List<RestaurantCategories> userCategories, int userBudget, double radiusMiles) throws IOException {
+        System.out.println("GetYelpRest()");
+        System.out.println(userCategories);
         // The replaces are needed to put it in a format tha yelp understands
         String location = address.replace(" ", "%20").replace(",", "%2C");
         String categories = "";
@@ -58,7 +60,7 @@ public class Service {
             categories = uCategories.substring(0, uCategories.lastIndexOf("&"));
         }
 
-
+        
 
 
         int radiusMeters = radiusMiles > 25? 40000: (int)(radiusMiles * 1609);
@@ -176,7 +178,6 @@ public class Service {
     // dateTime example format->      2024-11-22T15:01:0Z
     // MUST BE HAVE THE SAME NUMBER OF DIGITS FOR EACH ONE, YEAR NEEDS 4 EVERYTHING ELSE NEEDS 2
     public JsonArray getTicketMasterEvents(String city, String startDateTime, String endDateTime, List<EventCategories> classifications ) throws IOException {
-
         String classificationParams = "";
         for (EventCategories category : classifications){
             classificationParams += category.toString() + ",";
@@ -187,7 +188,6 @@ public class Service {
         Request request = new Request.Builder()
                 .url(TICKEMASTER_API_URL + "/events.json?size="+TICKET_MASTER_REQUEST_AMOUNT + addedParams+ "&apikey=" +TICKETMASTER_API_KEY )
                 .build();
-
         Response response = client.newCall(request).execute();
         return processTicketMasterResponse(response);
 

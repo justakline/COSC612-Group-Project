@@ -6,6 +6,8 @@ package traveldart;
 
 import java.awt.Color;
 import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.border.Border;
 
 /**
@@ -51,6 +53,12 @@ public class Search extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 homeMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                homeMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                homeMouseExited(evt);
+            }
         });
 
         search.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -73,10 +81,27 @@ public class Search extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 signOffMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                signOffMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                signOffMouseExited(evt);
+            }
         });
 
         profile.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         profile.setText("Profile");
+        profile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                profileMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                profileMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                profileMouseExited(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
         jLabel5.setText("Travel Dart");
@@ -146,11 +171,19 @@ public class Search extends javax.swing.JFrame {
 
     private void homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseClicked
         // TODO add your handling code here:
+        HomePage refForm = new HomePage();
+        refForm.setVisible(true);
+        refForm.pack();
+        refForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.dispose();
 
     }//GEN-LAST:event_homeMouseClicked
 
     private void searchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchMouseClicked
         // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "You're already on the search page", 
+                                   "ERROR", JOptionPane.ERROR_MESSAGE);
+
     }//GEN-LAST:event_searchMouseClicked
 
     private void searchMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchMouseEntered
@@ -167,9 +200,70 @@ public class Search extends javax.swing.JFrame {
 
     private void signOffMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signOffMouseClicked
         // TODO add your handling code here:
+        int a = JOptionPane.showConfirmDialog(null, "Are you sure?");
+        if (a == JOptionPane.YES_OPTION) {          
+            dispose();
+            Login obj = new Login();
+            obj.setTitle("New User login");
+            obj.setVisible(true);
+        }
+        
+        else if(a == JOptionPane.CANCEL_OPTION || a == JOptionPane.NO_OPTION){
+            System.out.print("Sign Off cancelled");
+        }
+        
         
     }//GEN-LAST:event_signOffMouseClicked
 
+    private void homeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseEntered
+        // TODO add your handling code here:
+        Border label = BorderFactory.createMatteBorder(0,0,1,0,Color.red);
+        home.setBorder(label);
+    }//GEN-LAST:event_homeMouseEntered
+
+    private void profileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileMouseClicked
+        // TODO add your handling code here:
+        Profile_1 refForm = new Profile_1();
+        refForm.setVisible(true);
+        refForm.pack();
+        refForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.dispose();
+        
+    }//GEN-LAST:event_profileMouseClicked
+
+    private void homeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseExited
+        // TODO add your handling code here:
+         Border label2 = BorderFactory.createMatteBorder(0,0,1,0,Color.gray);
+         search.setBorder(label2);
+        
+    }//GEN-LAST:event_homeMouseExited
+
+    private void profileMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileMouseEntered
+        // TODO add your handling code here:
+        Border label = BorderFactory.createMatteBorder(0,0,1,0,Color.red);
+        profile.setBorder(label);
+        
+    }//GEN-LAST:event_profileMouseEntered
+
+    private void profileMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileMouseExited
+        // TODO add your handling code here:
+        Border label2 = BorderFactory.createMatteBorder(0,0,1,0,Color.gray);
+         profile.setBorder(label2);
+    }//GEN-LAST:event_profileMouseExited
+
+    private void signOffMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signOffMouseEntered
+        // TODO add your handling code here:
+        Border label = BorderFactory.createMatteBorder(0,0,1,0,Color.red);
+        signOff.setBorder(label);
+    }//GEN-LAST:event_signOffMouseEntered
+
+    private void signOffMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signOffMouseExited
+        // TODO add your handling code here:
+        Border label2 = BorderFactory.createMatteBorder(0,0,1,0,Color.gray);
+         profile.setBorder(label2);
+    }//GEN-LAST:event_signOffMouseExited
+
+   
     /**
      * @param args the command line arguments
      */

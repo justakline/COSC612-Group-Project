@@ -3,11 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/justa/Desktop/SE%20Project%20Temp/traveldart/src/traveldart/DatabaseConnection.java</file>
-            <file>file:/C:/Users/justa/Desktop/SE%20Project%20Temp/traveldart/src/traveldart/Service.java</file>
-            <file>file:/C:/Users/justa/Desktop/SE%20Project%20Temp/traveldart/src/traveldart/HomePage.java</file>
-            <file>file:/C:/Users/justa/Desktop/SE%20Project%20Temp/traveldart/src/traveldart/SignUp.java</file>
-            <file>file:/C:/Users/justa/Desktop/SE%20Project%20Temp/traveldart/src/traveldart/Main.java</file>
+            <file>file:/C:/Users/diego/OneDrive/Documents/ComputerScience/AIT/624/projectrepo/COSC612-Group-Project/traveldart/src/traveldart/EventCategories.java</file>
+            <file>file:/C:/Users/diego/OneDrive/Documents/ComputerScience/AIT/624/projectrepo/COSC612-Group-Project/traveldart/src/traveldart/Location.java</file>
+            <file>file:/C:/Users/diego/OneDrive/Documents/ComputerScience/AIT/624/projectrepo/COSC612-Group-Project/traveldart/src/traveldart/Service.java</file>
+            <file>file:/C:/Users/diego/OneDrive/Documents/ComputerScience/AIT/624/projectrepo/COSC612-Group-Project/traveldart/src/traveldart/UserPreferences.java</file>
+            <file>file:/C:/Users/diego/OneDrive/Documents/ComputerScience/AIT/624/projectrepo/COSC612-Group-Project/traveldart/src/traveldart/RestaurantCategories.java</file>
+            <file>file:/C:/Users/diego/OneDrive/Documents/ComputerScience/AIT/624/projectrepo/COSC612-Group-Project/traveldart/src/traveldart/ServiceTester.java</file>
+            <file>file:/C:/Users/diego/OneDrive/Documents/ComputerScience/AIT/624/projectrepo/COSC612-Group-Project/traveldart/src/traveldart/LoginPage.java</file>
+            <file>file:/C:/Users/diego/OneDrive/Documents/ComputerScience/AIT/624/projectrepo/COSC612-Group-Project/traveldart/src/traveldart/DatabaseConnection.java</file>
+            <file>file:/C:/Users/diego/OneDrive/Documents/ComputerScience/AIT/624/projectrepo/COSC612-Group-Project/traveldart/src/traveldart/Profile_1.java</file>
+            <file>file:/C:/Users/diego/OneDrive/Documents/ComputerScience/AIT/624/projectrepo/COSC612-Group-Project/traveldart/src/traveldart/Preferences.java</file>
         </group>
     </open-files>
 </project-private>

@@ -13,6 +13,15 @@ public class Preferences {
     private int radiusMiles;
 
 
+    public Preferences(List<RestaurantCategories> foodPreferences, List<EventCategories> eventPreferences, int budget, Location location, int radius) {
+      
+        this.foodPreferences = foodPreferences;
+        this.eventPreferences = eventPreferences;
+        this.budget = budget;
+        this.location = location;
+        this.radiusMiles = radius;
+    }
+    
     public Preferences(int preferenceId, int userId, List<RestaurantCategories> foodPreferences,
                        List<EventCategories> eventPreferences, int budget, Location location, int radius) {
         this.preferenceId = preferenceId;
