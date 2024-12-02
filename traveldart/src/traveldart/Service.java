@@ -9,28 +9,36 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-// NOTHING IS WORKING BUT HERE IS AN OUTLINE
+
 
 public class Service {
 
-    private static final String YELP_API_KEY = "IcptW8UO0iwtUZWtzuL2kgUCK0tRxKLnuktfmi1IKpdahPZxG4P0m-hyM42zzuFxalBeTRAumTFRRDt8a736n5a1rnIk6DWUC0b3goGu30Dc3pNJ3eQFt99E4xcxZ3Yx";
+    private static  Service service = null;
+    private static final String YELP_API_KEY ="IcptW8UO0iwtUZWtzuL2kgUCK0tRxKLnuktfmi1IKpdahPZxG4P0m-hyM42zzuFxalBeTRAumTFRRDt8a736n5a1rnIk6DWUC0b3goGu30Dc3pNJ3eQFt99E4xcxZ3Yx";
     private static final String YELP_API_URL = "https://api.yelp.com/v3/businesses/search?";
     private static final String TICKETMASTER_API_KEY = "DS8GMTtiVvcMey0RZ5B0wcjPg1SIVcTn";
     private static final String TICKEMASTER_API_URL = "https://app.ticketmaster.com/discovery/v2";
-    private static final String OPENAI_API_KEY = "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";
+    private static final String OPENAI_API_KEY = "";
     private static final String OPEN_AI_URL = "https://api.openai.com/v1/chat/completions";
     private OkHttpClient client;
-    private final int TICKET_MASTER_REQUEST_AMOUNT = 10;
+    private final int TICKET_MASTER_REQUEST_AMOUNT = 30;
     private final int YELP_REQUEST_AMOUNT = 20;
 
+    // These are the most popular categories I could find that were compatible with the API
 
-
-
-    public Service() {
+    public static Service getInstance(){
+        if (service == null){
+            service = new Service();
+        }
+        return service;
+    }
+    private Service() {
         this.client = new OkHttpClient();
     }
 
@@ -38,20 +46,19 @@ public class Service {
 
     // userCategories should be things like "Thai, Mexican, Burgers... anything food related"
     // userBudget should be 1-4, 1 being cheapest, 4 being most expensive
-    public JsonArray testYelp (String address, RestaurantCategories[] userCategories, int[] userBudget, double radiusMiles) throws IOException {
+    public JsonArray getYelpRestaurants (String address,List<RestaurantCategories> userCategories, int userBudget, double radiusMiles) throws IOException {
         // The replaces are needed to put it in a format tha yelp understands
         String location = address.replace(" ", "%20").replace(",", "%2C");
-        String uCategories = "";
-        for (RestaurantCategories item: userCategories){
-            uCategories += item + "&categories=";
+        String categories = "";
+        if(!userCategories.isEmpty()){
+            String uCategories = "";
+            for (RestaurantCategories item: userCategories){
+                uCategories += item + "&categories=";
+            }
+            categories = uCategories.substring(0, uCategories.lastIndexOf("&"));
         }
-        String categories = uCategories.substring(0, uCategories.lastIndexOf("&"));
 
-        String budget = "";
-        for (int item: userBudget){
-            budget += item + "&price=";
-        }
-        budget = budget.substring(0, budget.lastIndexOf("&"));
+
 
 
         int radiusMeters = radiusMiles > 25? 40000: (int)(radiusMiles * 1609);
@@ -59,21 +66,19 @@ public class Service {
             location="""+ location + """
             &radius=""" + radiusMeters + """
             &categories=""" + categories + """
-            &price=""" + budget + """
+            &price=""" + userBudget + """
             &open_now=true
             &sort_by=best_match
             &limit=""" + YELP_REQUEST_AMOUNT;
-        System.out.println(reqURL);
         Request request = new Request.Builder()
                 .url(reqURL)
                 .get()
                 .addHeader("accept", "application/json")
                 .addHeader("Authorization", "Bearer "+YELP_API_KEY)
                 .build();
-        // System.out.println(location);
-        // System.out.println(categories);
+
         Response response = client.newCall(request).execute();
-       return processYelpResponse(response);
+        return processYelpResponse(response);
     }
 
 
@@ -105,12 +110,13 @@ public class Service {
                 }
                 newAddress = newAddress.substring(0,newAddress.lastIndexOf(","));
                 newArrayItem.addProperty("address", newAddress);
+                newArrayItem.addProperty("distance", responseItem.get("distance").getAsString());
                 newArrayItem.addProperty("price", responseItem.get("price").toString().split("\\$").length );
 
                 JsonArray categories = responseItem.getAsJsonArray("categories");
                 JsonArray newCategories = new JsonArray();
                 for (JsonElement category : categories){
-                    newCategories.add(category.getAsJsonObject().get("title"));
+                    newCategories.add(category);
                 }
                 newArrayItem.add("categories", newCategories);
 
@@ -125,7 +131,7 @@ public class Service {
                 newArray.add(newArrayItem);
             }catch(Exception e){
                 System.out.println("Something wrong with this item");
-                // e.printStackTrace();
+
             }
 
         }
@@ -163,15 +169,21 @@ public class Service {
                 .build();
 
         Response response = client.newCall(request).execute();
-        System.out.println(formatJson(response.body().string()));
     }
 
 
     // dateTime needs to be in format YEAR-MONTH-DAYTHR:MIN:SECZ
     // dateTime example format->      2024-11-22T15:01:0Z
     // MUST BE HAVE THE SAME NUMBER OF DIGITS FOR EACH ONE, YEAR NEEDS 4 EVERYTHING ELSE NEEDS 2
-    public JsonArray getTicketMasterEvents(String city, String startDateTime, String endDateTime, EventCategories classification) throws IOException {
-        String addedParams = "&city=[" +city +"]"+  "&startDateTime=" + startDateTime + "&endDateTime=" + endDateTime +"&classification=" + classification.toString();
+    public JsonArray getTicketMasterEvents(String city, String startDateTime, String endDateTime, List<EventCategories> classifications ) throws IOException {
+
+        String classificationParams = "";
+        for (EventCategories category : classifications){
+            classificationParams += category.toString() + ",";
+        }
+        classificationParams= classificationParams.substring(0, classificationParams.length());
+
+        String addedParams = "&city=[" +city +"]"+  "&startDateTime=" + startDateTime + "&endDateTime=" + endDateTime +"&classification="+ classificationParams;
         Request request = new Request.Builder()
                 .url(TICKEMASTER_API_URL + "/events.json?size="+TICKET_MASTER_REQUEST_AMOUNT + addedParams+ "&apikey=" +TICKETMASTER_API_KEY )
                 .build();
@@ -302,4 +314,142 @@ public class Service {
         return location;
     }
 
+
+    public JsonObject createRecommendation(JsonArray events, JsonArray restaurants, Preferences preferences) {
+        JsonObject recommendations = new JsonObject();
+
+        // Process and rank
+        JsonArray rankedEvents = rankEvents(events, preferences);
+        JsonArray rankedRestaurants = rankRestaurants(restaurants, preferences);
+
+        // Add the ranked lists to the recommendations object
+        recommendations.add("events", rankedEvents);
+        recommendations.add("restaurants", rankedRestaurants);
+
+        return recommendations;
+    }
+
+    private JsonArray rankEvents(JsonArray events, Preferences preferences) {
+        List<JsonObject> eventList = new ArrayList<>();
+        for (int i = 0; i < events.size(); i++) {
+            JsonObject event = events.get(i).getAsJsonObject();
+            int relevanceScore = calculateEventScore(event, preferences);
+            event.addProperty("score", relevanceScore); // Add score to event for sorting
+            eventList.add(event);
+        }
+
+        // Sort events by relevance score in descending order
+        eventList.sort(Comparator.comparingInt(e -> -e.get("score").getAsInt()));
+
+        JsonArray rankedEvents = new JsonArray();
+        for (JsonObject event : eventList) {
+            // event.remove("score"); // Remove the score before returning
+            rankedEvents.add(event);
+        }
+
+        return rankedEvents;
+    }
+
+    private int calculateEventScore(JsonObject event, Preferences preferences) {
+        int score = 0;
+
+        // Check if event category matches user preferences
+        JsonArray classifications = event.getAsJsonArray("classifications");
+        if (classifications != null) {
+            for (int i = 0; i < classifications.size(); i++) {
+                JsonObject classification = classifications.get(i).getAsJsonObject();
+                String genre = classification.getAsJsonObject("genre").get("name").getAsString();
+                String subgenre = classification.getAsJsonObject("subGenre").get("name").getAsString();
+                for (EventCategories category : preferences.getEventPreferences()){
+                    if (category.toString().equalsIgnoreCase(genre)) {
+                        score += 10;
+                    }
+                    if (category.toString().equalsIgnoreCase(subgenre)) {
+                        score += 20; //more specific would mean higher match it think
+                    }
+                }
+
+
+            }
+        }
+
+
+
+        return score;
+    }
+
+    private JsonArray rankRestaurants(JsonArray restaurants, Preferences preferences) {
+        List<JsonObject> restaurantList = new ArrayList<>();
+        for (int i = 0; i < restaurants.size(); i++) {
+            JsonObject restaurant = restaurants.get(i).getAsJsonObject();
+            int relevanceScore = calculateRestaurantScore(restaurant, preferences);
+            restaurant.addProperty("score", relevanceScore); // Add score to restaurant for sorting
+            restaurantList.add(restaurant);
+        }
+
+        // Sort restaurants by relevance score in descending order
+        restaurantList.sort(Comparator.comparingInt(r -> -r.get("score").getAsInt()));
+
+        JsonArray rankedRestaurants = new JsonArray();
+        for (JsonObject restaurant : restaurantList) {
+            // restaurant.remove("score"); // Remove the score before returning
+            rankedRestaurants.add(restaurant);
+        }
+
+        return rankedRestaurants;
+    }
+
+    private int calculateRestaurantScore(JsonObject restaurant, Preferences preferences) {
+        int score = 0;
+
+        // Check if food categories match user preferences
+        JsonArray categories = restaurant.getAsJsonArray("categories");
+        if (categories != null) {
+            for (int i = 0; i < categories.size(); i++) {
+                String restaurantCategory = categories.get(i).getAsJsonObject().get("alias").toString();
+                for(RestaurantCategories userCategory : preferences.getFoodPreferences()){
+                    if (userCategory.toString().equals((restaurantCategory.replace("\"", "")))) {
+                        score += 15;
+                    }
+
+                }
+            }
+        }
+
+        // Adjust score based on budget
+        int price = restaurant.get("price").getAsInt();
+        if (price < preferences.getBudget()) {
+            score += 5; // Boost for affordability
+        }
+
+        float restaurantRating = restaurant.get("rating").getAsFloat();
+        if(restaurantRating >= 4.5 ){
+            score += 10;
+        }else if (restaurantRating >= 4.0){
+            score += 5;
+        }
+
+        int reviewCount = restaurant.get("review_count").getAsInt();
+        if(reviewCount >= 200){
+            score += 7;
+        } else if (reviewCount >= 100) {
+            score += 3;
+        }
+
+        float distance = restaurant.get("distance").getAsFloat();
+        if(distance < 1500){
+            score += 10;
+        }else if(distance < 4000){
+            score += 5;
+        }
+        else if(distance < 6000){
+            score += 2;
+        }else if(distance < 8000){
+            score += 1;
+        }
+
+
+
+        return score;
+    }
 }
