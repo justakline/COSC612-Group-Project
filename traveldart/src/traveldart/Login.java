@@ -102,6 +102,7 @@ public class Login extends JFrame {
         loginButton.setText("Login");
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
+                    
                 loginButtonActionPerformed(evt);
             }
         });
@@ -142,6 +143,7 @@ public class Login extends JFrame {
     
     // Verify if the input password matches the stored hash
     public static boolean verifyPassword(String inputPassword, String storedHash) {
+   
         try {
             // Split the stored hash into salt and hashedPassword
             String[] parts = storedHash.split(":");
@@ -184,17 +186,22 @@ public class Login extends JFrame {
 
 //    String query = "SELECT * FROM users WHERE username = ? AND password = ?";
     String query = "SELECT * FROM users WHERE username = ?";
+             
+
     try {
         // Establish connection
+        System.out.println("In verify");
         connection = DatabaseConnection.connect();
 
         // Prepare the statement with placeholders
         pst = connection.prepareStatement(query);
+        System.out.println("Created Statement");
         pst.setString(1, username.getText());
 //        pst.setString(2, password.getText());
 
         // Execute the query
         resultSet = pst.executeQuery();
+        System.out.println("Exectured");
 
         // Check if a user exists with the given credentials
         if (resultSet.next()) {

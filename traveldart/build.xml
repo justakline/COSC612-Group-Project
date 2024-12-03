@@ -75,10 +75,24 @@
     <property name="classes.dir" value="${build.dir}/classes" />
     <property name="lib.dir" value="lib" /> <!-- Points to your newly created lib folder -->
 
+    <path id="additional.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+ <!-- Add classpath before compilation -->
+    <target name="-pre-compile">
+    
+        <copy todir="${build.classes.dir}">
+                 <fileset dir="${src.dir}" includes="Images/**/*" />
+        </copy>
+    </target>
+
     <!-- Define the classpath to include JARs from lib -->
     <path id="classpath">
         <fileset dir="${lib.dir}">
             <include name="**/*.jar" />
+             <include name="postgresql-*.jar" />
         </fileset>
     </path>
 
@@ -87,6 +101,20 @@
         <mkdir dir="${classes.dir}" />
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
     </target>
+    <target name="-pre-jar">
+    <!-- Copy all resources (e.g., Images folder) to the JAR -->
+    <copy todir="${build.classes.dir}">
+        <fileset dir="${src.dir}" includes="Images/**/*" />
+    </copy>
+</target>
+<target name="-post-jar">
+    <mkdir dir="${dist.dir}/lib" />
+    <copy todir="${dist.dir}/lib">
+        <fileset dir="${lib.dir}" includes="**/*.jar" />
+    </copy>
+</target>
+ 
+
 
     <!-- Run task -->
     <target name="run" depends="compile">

@@ -125,6 +125,7 @@ public class LoginPage extends javax.swing.JFrame {
     private void SignInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SignInButtonActionPerformed
         // TODO add your handling code here:
         // Retrieve the text from the usernameTextField
+             System.out.println("In verify");
     String username = UserNameTextField.getText();
     
     // Print the username to the console (for debugging)
